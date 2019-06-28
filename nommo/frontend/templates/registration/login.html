@@ -1,0 +1,25 @@
+{% extends "index.html" %}
+{% load bootstrap4 %}
+
+{% block main %}
+<main role="main" class="container">
+  <div class="starter-template">
+    <span style="color:white">
+    <h1>Log in</h1>
+    <p class="lead">
+      Access your to account.
+    </p>
+    <form class="" action="" method="post">
+
+      {% csrf_token %}
+      {% bootstrap_form form %}
+      {% buttons %}
+
+          <a href="/"><button type="button" class="btn btn-outline-primary">← Back</button></a>
+          <button type="submit" class="btn btn-primary">Log in</button>
+      {% endbuttons %}
+    </form>
+    </span>
+  </div>
+</main>
+{% endblock %}

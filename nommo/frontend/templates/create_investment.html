@@ -1,0 +1,16 @@
+{% extends "index.html" %}
+{% load crispy_forms_tags %}
+
+{% block main %}
+<main role="main" class="container">
+<form action="/create_investment/" method="POST">
+  <p class="h3" style="color:white">Create Investment:</p>
+  <span style="color:white">
+  {% csrf_token %}
+  {{form|crispy}}
+  </span>
+  <a href="/"><button type="button" class="btn btn-outline-primary">← Back</button></a>
+  <input type="submit" value="Create" class="btn btn-primary">
+</form>
+</main>
+{% endblock %}

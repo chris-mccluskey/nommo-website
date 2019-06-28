@@ -1,0 +1,16 @@
+{% extends "index.html" %}
+{% load crispy_forms_tags %}
+
+{% block main %}
+<main role="main" class="container">
+  <span style="color:white">
+  <form action="/signup/" method="POST">
+    <h1>Sign up</h1>
+    {% csrf_token %}
+    {{signup_form|crispy}}
+    <a href="/"><button type="button" class="btn btn-outline-primary">← Back</button></a>
+    <input type="submit" value="Create" class="btn btn-primary">
+  </form>
+  </span>
+</main>
+{% endblock %}

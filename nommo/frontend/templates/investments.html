@@ -1,40 +1,13 @@
 {% extends "index.html" %}
 
+
+{% block content %}
+<li class="nav-item">
+<a class="nav-link js-scroll-trigger" href="/">Home</a>
+</li>
+{% endblock %}
+
 {% block main %}
-<nav class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNav">
-  <div class="container">
-    <a class="navbar-brand js-scroll-trigger" href="/">Nommo Group LLC</a>
-    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarResponsive">
-      <ul class="navbar-nav ml-auto my-2 my-lg-0">
-        {% block content %}
-        <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" href="/">Home</a>
-        </li>
-        {% endblock %}
-        {% if request.user.is_authenticated %}
-        <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" href="/accounts/logout">Log out</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link js-scroll-trigger"><i class="fa fa-user"></i> {{request.user.username|capfirst}}</a>
-        </li>
-
-        {% else %}
-        <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" href="/accounts/login">Log in</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link js-scroll-trigger" href="/signup">Sign up</a>
-        </li>
-        {% endif %}
-
-      </ul>
-    </div>
-  </div>
-</nav>
 <span style="color:white">
   <main role="main" class="container">
   <p class="h1">These are our best investments!</p>
@@ -57,9 +30,10 @@
   <table class="table table-bordered table-hover text-center lead">
     <thead>
       <tr>
-        <th style="color:white">#</th>
         <th style="color:white">Project</th>
         <th style="color:white">Industry</th>
+        <th style="color:white">Current Global Rank</th>
+        <th style="color:white">Project Website</th>
           {% if request.user.is_staff %}
             <th style="color:white">Actions</th>
           {% endif %}
@@ -68,15 +42,16 @@
     <tbody>
       {% for inv in investments %}
         <tr>
-          <td class="align-middle" style="color:white">{{ inv.id }}</td>
-          <td class="align-middle" style="color:white"> <a href='/investments/{{inv.id}}'>{{ inv.name}}</td>
-          <td class="align-middle" style="color:white">{{ inv.category}}</td>
+          <td class="align-middle" style="color:white"> <a href='/investments/{{inv.id}}'>{{ inv.name }}</td>
+          <td class="align-middle" style="color:white">{{ inv.category }}</td>
+          <td class="align-middle" style="color:white">{{ inv.rank }}</td>
+          <td class="align-middle" style="color:white"> <a href='/investments/{{inv.site}}'>{{ inv.site }}</td>
           {% if request.user.is_authenticated and request.user.is_staff %}
             <td class="align-middle">
               <div class="row justify-content-md-center">
                 <a href="/edit_investment/{{inv.id}}" style="margin-right: 5px;"><button type="button" class="btn btn-primary btn-xs">Edit</button></a>
+                {% csrf_token %}
                 <form class="" action="/delete_investment/{{inv.id}}" method="post">
-                  {% csrf_token %}
                   <input type="hidden" name='inv_id' value='{{inv.id}}'>
                   <input type="submit" value='Delete' class="btn btn-outline-danger btn-xs">
                 </form>

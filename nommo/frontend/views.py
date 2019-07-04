@@ -13,15 +13,27 @@ from django.views.generic import TemplateView, View, RedirectView
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Country, Category, Investment
 from .forms import SignUpForm
+import requests
+from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
+import json
+from django.db.models import F
 
-# from .models import
-# from .forms import
 def is_staff(user):
     return user.is_staff
 
 
+def get_rank(obj):
+    url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
+    headers = {'X-CMC_PRO_API_KEY': 'd7b02d27-ae3e-414d-b8bb-aaaffa7049ea'}
+    response = requests.get(url, headers=headers)
+    for coin in response.json()['data']:
+        if coin['slug'] == obj.name.lower():
+            return int(coin['cmc_rank'])
+
+
 class HomeView(TemplateView):
     template_name = 'index.html'
+
 
 class InvestmentsView(TemplateView):
     template_name = 'investments.html'
@@ -31,31 +43,35 @@ class InvestmentsView(TemplateView):
         investments = Investment.objects.all()
         print(self.request.GET)
 
-        # sort_method = self.request.GET.get('sort', 'asc')
-        # if sort_method == 'asc':
-        #     books = books.order_by('popularity')
-        # elif sort_method == 'desc':
-        #     books = books.order_by('-popularity')
 
         if 'q' in self.request.GET:
             q = self.request.GET['q']
             investments = investments.filter(name__icontains=q)
 
+        for inv in investments:
+            print(inv)
+            rank = get_rank(inv)
+            inv.rank = int(rank)
+            print(inv.rank)
+
         context['investments'] = investments
+
         return context
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
 
-        # initialize list of favorite books for current session
+
         request.session.setdefault('favorite_investments', [])
         request.session.save()
 
         return self.render_to_response(context)
 
+
 class InvestmentView(DetailView):
     model = Investment
     template_name = 'investment.html'
+
 
 @method_decorator(login_required, name='dispatch')
 @method_decorator(user_passes_test(is_staff), name='dispatch')
@@ -82,36 +98,6 @@ class DeleteInvestmentView(DeleteView):
     success_url = '/investments'
 
 
-#
-# class FavoritesView(TemplateView):
-#     template_name = 'favorites.html'
-#
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         books_ids = self.request.session.get('favorite_books', [])
-#         favorite_books = Book.objects.filter(id__in=books_ids)
-#         context['favorite_books'] = favorite_books
-#         return context
-#
-#
-# class AddFavorite(View):
-#
-#     def post(self, request, *args, **kwargs):
-#         request.session.setdefault('favorite_books', [])
-#         request.session['favorite_books'].append(request.POST.get('book_id'))
-#         request.session.save()
-#         return redirect('index')
-#
-#
-# class RemoveFavorite(View):
-#
-#     def post(self, request, *args, **kwargs):
-#         if request.session.get('favorite_books'):
-#             request.session['favorite_books'].remove(request.POST.get('book_id'))
-#             request.session.save()
-#         return redirect('index')
-
-
 class SignUpView(TemplateView):
     template_name = 'signup.html'
 
@@ -128,8 +114,8 @@ class SignUpView(TemplateView):
             user.save()
             login(request, user)
             return redirect('index')
-        return render(
-            request,
-            'signup.html',
-            context={'signup_form': signup_form}
-        )
+        return render(request, 'signup.html', context={'signup_form': signup_form})
+
+
+class AuctionView(TemplateView):
+    template_name = 'auction.html'

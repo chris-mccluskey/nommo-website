@@ -13,8 +13,10 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DJANGO_PROJECT_DIR = os.path.dirname(BASE_DIR)
+PROJECT_DIR = os.path.dirname(DJANGO_PROJECT_DIR)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -25,7 +27,7 @@ SECRET_KEY = '94knc7-&e-u&%4gnqjc3-$o=mr1hk-obn(w*yuirumlutirzdi'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -41,8 +43,10 @@ INSTALLED_APPS = [
     'bootstrap4',
     'crispy_forms',
 
-    'frontend',
+    'frontend.apps.FrontendConfig',
 ]
+
+ROOT_URLCONF = 'nommo.urls'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
@@ -126,6 +130,11 @@ LOGOUT_REDIRECT_URL = '/'
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    os.path.join(PROJECT_DIR, "static"),
+]
+STATIC_ROOT = os.path.join(PROJECT_DIR, 'staticfiles')
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',

@@ -4,7 +4,7 @@ END=" \#\#\# \033[0m\n"
 HOST=localhost
 PORT=9090
 PYTHONPATH=nommo
-DJANGO_SETTINGS=nommo.settings
+DJANGO_SETTINGS=nommo.settings.prod
 
 # django-command = django-admin $(1) $(HOST):$(PORT) --settings $(DJANGO_SETTINGS) --pythonpath $(PYTHONPATH)
 django-command = django-admin $(1) $(2) --settings $(DJANGO_SETTINGS) --pythonpath $(PYTHONPATH)
